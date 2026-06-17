@@ -1,0 +1,12 @@
+__pycache__/
+thumbnails/
+htm
+htm+audio
+htm/
+htm+audio/
+pdfs
+pdfs/
+pdfs.htm
+personal
+personal/
+scripting/__pycache__/

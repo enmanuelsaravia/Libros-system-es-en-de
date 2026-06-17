@@ -1,0 +1,1 @@
+lt-proc -g '/home/user/Personal/Libros-aurelia/portable-bin-PATH/share/apertium/apertium-eng/eng.autogen.bin' | lt-proc -p '/home/user/Personal/Libros-aurelia/portable-bin-PATH/share/apertium/apertium-eng/eng.autopgen.bin'

@@ -1,0 +1,1 @@
+lt-proc -w -e '/home/user/Personal/Libros-aurelia/portable-bin-PATH/share/apertium/apertium-deu/deu.automorf.bin' | cg-conv -a -r | vislcg3 --trace -g '/home/user/Personal/Libros-aurelia/portable-bin-PATH/share/apertium/apertium-deu/apertium-deu.deu.rlx'

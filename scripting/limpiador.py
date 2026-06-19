@@ -9,7 +9,7 @@ def limpiar_texto(ruta_entrada):
     # Definimos los caracteres permitidos según tu lista
     # usa este cuando te sientas seguro que no hay exeso de numeros
     # permitidos = "0123456789abcdefghijklmnñopqrstuvwxyzüáéíóúABCDEFGHIJKLMNÑOPQRSTUVWXYZÜÁÉÍÓÚ.,:; "
-    permitidos = "abcdefghijklmnñopqrstuvwxyzäöüáéíóúßABCDEFGHIJKLMNÑOPQRSTUVWXYZÄÖÜÁÉÍÓÚ!?.,:;ʼ”“()- "
+    permitidos = "0123456789abcdefghijklmnñopqrstuvwxyzäöüáéíóúßABCDEFGHIJKLMNÑOPQRSTUVWXYZÄÖÜÁÉÍÓÚ!?.,:;ʼ”“()- "
     set_permitidos = set(permitidos)
     signos_puntuacion = "!?.,:;ʼ”“()-"
 

@@ -51,7 +51,7 @@ def generate_htm(template_content, pdf_base64, audio_map, filename, output_path)
 
     # 1. Inyección de CSS para los botones de Audio
     css_to_inject = """
-        /* Estilos Premium para Controles de Audio */
+        /* Estilos Premium para Controles de Audio/Texto */
         .audio-controls {
             display: flex;
             flex-direction: column;
@@ -62,32 +62,40 @@ def generate_htm(template_content, pdf_base64, audio_map, filename, output_path)
             margin-bottom: 0.5rem;
         }
 
-        .audio-btn {
+        .audio-buttons-row {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
             width: 100%;
+            gap: 0.5rem;
+        }
+
+        .audio-btn {
+            flex: 1;
+            aspect-ratio: 1;
             justify-content: center;
             font-weight: bold;
-            font-size: 1rem;
-            padding: 10px 16px;
-            border: 2px solid var(--border-color);
+            font-size: 1.1rem;
+            padding: 10px;
+            border: none;
             border-radius: 8px;
-            background: transparent;
+            background: #ffffff !important;
             color: var(--text-color);
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex;
             align-items: center;
-            gap: 0.5rem;
-            text-transform: uppercase;
+            text-transform: lowercase;
         }
 
         .audio-btn:hover:not(:disabled) {
             background: var(--text-color);
-            color: var(--bg-color);
+            color: #ffffff;
         }
 
         .audio-btn:disabled {
             opacity: 0.25;
             cursor: not-allowed;
-            border-style: dashed;
+            border-style: none;
         }
 
         .audio-btn.playing {
@@ -108,8 +116,7 @@ def generate_htm(template_content, pdf_base64, audio_map, filename, output_path)
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background: rgba(0,0,0,0.03);
-            border: 2px solid var(--border-color);
+            background: #ffffff;
             border-radius: 8px;
             padding: 8px 12px;
             font-weight: bold;
@@ -175,12 +182,14 @@ def generate_htm(template_content, pdf_base64, audio_map, filename, output_path)
 
     # Inyección del HTML de los botones de audio
     html_to_inject = '\n            <div class="audio-controls">\n'
-    if "en" in langs_with_audio:
-        html_to_inject += '                <button id="play-en" class="audio-btn" disabled>Play en</button>\n'
+    html_to_inject += '                <div class="audio-buttons-row">\n'
     if "es" in langs_with_audio:
-        html_to_inject += '                <button id="play-es" class="audio-btn" disabled>Play es</button>\n'
+        html_to_inject += '                    <button id="play-es" class="audio-btn" disabled>es</button>\n'
+    if "en" in langs_with_audio:
+        html_to_inject += '                    <button id="play-en" class="audio-btn" disabled>en</button>\n'
     if "de" in langs_with_audio:
-        html_to_inject += '                <button id="play-de" class="audio-btn" disabled>Play de</button>\n'
+        html_to_inject += '                    <button id="play-de" class="audio-btn" disabled>de</button>\n'
+    html_to_inject += '                </div>\n'
     html_to_inject += """                <div class="autoplay-container">
                     <span>💡 Manos Libres</span>
                     <label class="switch" title="Cambio automático de página al terminar audio">
@@ -253,7 +262,7 @@ def generate_htm(template_content, pdf_base64, audio_map, filename, output_path)
             langs.forEach(l => {{
                 const btn = document.getElementById('play-' + l);
                 if (btn) {{
-                    btn.textContent = 'Play ' + l;
+                    btn.textContent = l;
                     btn.classList.remove('playing');
                 }}
             }});
@@ -288,7 +297,7 @@ def generate_htm(template_content, pdf_base64, audio_map, filename, output_path)
             if (idx > -1) fallbackChain.splice(idx, 1);
             fallbackChain.unshift(lang);
 
-            btn.textContent = 'Stop ' + lang;
+            btn.textContent = lang;
             btn.classList.add('playing');
             
             const globalBtn = document.getElementById('global-play-btn');
@@ -334,10 +343,10 @@ def generate_htm(template_content, pdf_base64, audio_map, filename, output_path)
                     const hasAudio = audioMap[num] && audioMap[num][lang];
                     if (hasAudio) {{
                         btn.removeAttribute('disabled');
-                        btn.textContent = 'Play ' + lang;
+                        btn.textContent = lang;
                     }} else {{
                         btn.setAttribute('disabled', 'true');
-                        btn.textContent = 'Play ' + lang + ' (Sin audio)';
+                        btn.textContent = lang;
                     }}
                 }}
             }});

@@ -127,8 +127,17 @@ translate_text() {
     # Creamos un script de python temporal para manejar la traducción de forma robusta
     # ya que no todos los idiomas tienen un binario en dist/
     cat <<EOF > "$WORKDIR/translator.py"
-import sys
 import os
+import sys
+
+# Dynamically add portable python site-packages to sys.path
+project_root = "$PORTABLE_ROOT"
+for folder in os.listdir(project_root):
+    if folder.startswith('portable-bin-'):
+        site_pkg = os.path.join(project_root, folder, 'python', 'site-packages')
+        if os.path.exists(site_pkg) and site_pkg not in sys.path:
+            sys.path.insert(0, site_pkg)
+
 from deep_translator import GoogleTranslator
 
 target = "$target_lang"

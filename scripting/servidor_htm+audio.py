@@ -32,7 +32,17 @@ def get_translated_titles(title):
     if title in TITLE_CACHE:
         return TITLE_CACHE[title]
     script = f"""
+import os
 import sys
+
+# Dynamically add portable python site-packages to sys.path
+project_root = "{PROJECT_ROOT}"
+for folder in os.listdir(project_root):
+    if folder.startswith('portable-bin-'):
+        site_pkg = os.path.join(project_root, folder, 'python', 'site-packages')
+        if os.path.exists(site_pkg) and site_pkg not in sys.path:
+            sys.path.insert(0, site_pkg)
+
 try:
     from deep_translator import GoogleTranslator
     es = GoogleTranslator(source='auto', target='es').translate(sys.argv[1])
@@ -331,6 +341,8 @@ class CustomHandler(http.server.SimpleHTTPRequestHandler):
                 clean_name = ' '.join(w.capitalize() for w in clean_name.split())
                 
                 base_name_sa = name if os.path.isdir(fullname) else os.path.splitext(name)[0]
+                if not os.path.isdir(fullname):
+                    base_name_sa = re.sub(r'\.\d+$', '', base_name_sa)
                 cover_url = None
                 for ext in ['.jpg', '.jpeg', '.png', '.webp', '.gif']:
                     if (base_name_sa.lower() + ext) in images:

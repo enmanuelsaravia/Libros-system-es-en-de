@@ -180,7 +180,17 @@ translate_text() {
     local output_file=$3
 
     cat <<EOF > "$WORKDIR/translator_${PADDED_PAGE}_${target_lang}.py"
+import os
 import sys
+
+# Dynamically add portable python site-packages to sys.path
+project_root = "$PORTABLE_ROOT"
+for folder in os.listdir(project_root):
+    if folder.startswith('portable-bin-'):
+        site_pkg = os.path.join(project_root, folder, 'python', 'site-packages')
+        if os.path.exists(site_pkg) and site_pkg not in sys.path:
+            sys.path.insert(0, site_pkg)
+
 from deep_translator import GoogleTranslator
 
 def chunk_text(text, size=4000):

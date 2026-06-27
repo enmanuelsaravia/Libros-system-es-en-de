@@ -277,6 +277,22 @@ done
 
 wait
 
+# Unir todos los WAVs de las páginas en un único WAV completo para el libro
+FINAL_MERGED_WAV="$OUT_DIR/${BOOK_NAME}.${TARGET_LANG}.wav"
+echo ""
+echo "[+] Uniendo todas las páginas WAV en un solo archivo: $(basename "$FINAL_MERGED_WAV")..."
+mapfile -t wav_files < <(ls -1 "$OUT_DIR"/"${BOOK_NAME}".page-[0-9][0-9][0-9][0-9]."${TARGET_LANG}".wav 2>/dev/null | sort)
+if [ ${#wav_files[@]} -gt 0 ]; then
+    if command -v sox >/dev/null 2>&1; then
+        sox "${wav_files[@]}" "$FINAL_MERGED_WAV"
+        echo "[!] Archivo único creado exitosamente en: $FINAL_MERGED_WAV"
+    else
+        echo "⚠️ Advertencia: 'sox' no está instalado. No se pudo unir en un único WAV."
+    fi
+else
+    echo "⚠️ Advertencia: No se encontraron páginas WAV para unir."
+fi
+
 # Compile viewer
 echo ""
 echo "[+] Compilando visor monolítico para ${BOOK_NAME}..."
@@ -287,3 +303,4 @@ rm -rf "$WORKDIR"
 echo "===================================================="
 echo "[!] PROCESO COMPLETADO"
 echo "===================================================="
+

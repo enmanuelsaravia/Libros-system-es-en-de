@@ -29,8 +29,8 @@ then if [ ! -e "$2" ]
      FILE1=$2;
      FILE2=$3;
 fi
-xmllint --dtdvalid "/home/user/Personal/Libros-aurelia/portable-bin-for-rocky-linux-8-PATH/share/apertium"/format.dtd --noout "$FILE1" && \
-xsltproc "/home/user/Personal/Libros-aurelia/portable-bin-for-rocky-linux-8-PATH/share/apertium"/reformat.xsl "$FILE1" >/tmp/$$.reformat.l && \
+xmllint --dtdvalid "/home/user/Libros-system-es-en-de/portable-bin-for-rocky-linux-8-PATH/share/apertium"/format.dtd --noout "$FILE1" && \
+xsltproc "/home/user/Libros-system-es-en-de/portable-bin-for-rocky-linux-8-PATH/share/apertium"/reformat.xsl "$FILE1" >/tmp/$$.reformat.l && \
 /usr/bin/flex $FLEXOPTS -o/tmp/$$.lex.cc /tmp/$$.reformat.l && \
-g++ -DGENFORMAT -Wall -Wextra -g -O2 -std=c++2a -w  -I /home/user/Personal/Libros-aurelia/portable-bin-for-rocky-linux-8-PATH/include -o "$FILE2" /tmp/$$.lex.cc 2>/dev/null &&\
+g++ -DGENFORMAT -Wall -Wextra -g -O2 -std=c++2a -w  -I /home/user/Libros-system-es-en-de/portable-bin-for-rocky-linux-8-PATH/include -o "$FILE2" /tmp/$$.lex.cc 2>/dev/null &&\
 rm /tmp/$$.reformat.l /tmp/$$.lex.cc

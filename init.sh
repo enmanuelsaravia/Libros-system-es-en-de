@@ -240,14 +240,20 @@ echo "📚 Seleccione el modo de generación:"
 echo "[0] Generar .htm normales (rápido, sin audio)"
 echo "[1] Generar ARDUAMENTE con audios paginados multilingües (Piper + Traducción)"
 echo "[2] Generar ARDUAMENTE con audios para TODOS los libros (Batch automático)"
+echo "[3] Generar ARDUAMENTE un audio a partir de un pdf en un idioma hacia el mismo u otro"
+echo "[4] Generar ARDUAMENTE un audio a partir de TODOS los pdfs en un idioma hacia el mismo u otro (Batch automático)"
 echo ""
 
 mode_selection="0"
-read -r -p "Seleccione opción [0/1/2] (Por defecto: 0): " input_selection || true
+read -r -p "Seleccione opción [0/1/2/3/4] (Por defecto: 0): " input_selection || true
 if [[ "$input_selection" == "1" ]]; then
     mode_selection="1"
 elif [[ "$input_selection" == "2" ]]; then
     mode_selection="2"
+elif [[ "$input_selection" == "3" ]]; then
+    mode_selection="3"
+elif [[ "$input_selection" == "4" ]]; then
+    mode_selection="4"
 fi
 
 if [[ "$mode_selection" == "1" ]]; then
@@ -535,6 +541,211 @@ if [[ "$mode_selection" == "2" ]]; then
     echo ""
     echo "===================================================="
     echo "🎉 ¡Conversión en lote automatizada completada con éxito!"
+    echo "===================================================="
+    echo ""
+fi
+
+if [[ "$mode_selection" == "3" ]]; then
+    if [ "${DEBUG:-0}" = "1" ]; then
+        echo "[DEBUG] mode_selection = $mode_selection"
+        set -x
+    fi
+    trap 'echo "[ERROR] Falló en la línea $LINENO con código de salida $?"' ERR
+    echo ""
+    echo "🔎 Escaneando libros disponibles..."
+    
+    declare -a all_pdfs=()
+    declare -a all_names=()
+    declare -a all_pages=()
+    
+    temp_pdfs=$(mktemp)
+    while IFS= read -r -d '' pdf; do
+        filename=$(basename "$pdf")
+        if [[ "$pdf" =~ /\.git/ || "$pdf" =~ /personal/tmp_ ]]; then
+            continue
+        fi
+        pages=$(get_page_count "$pdf")
+        pages=${pages:-0}
+        printf '%d|%s|%s\n' "$pages" "$pdf" "$filename" >> "$temp_pdfs"
+    done < <(find -L "$ABS_DIR" -maxdepth 1 -type f \( -iname "*.pdf" -o -iname "*.PDF" \) -print0)
+    
+    if [[ -f "$temp_pdfs" ]]; then
+        while IFS='|' read -r pages pdf filename; do
+            if [[ -n "$pdf" ]]; then
+                all_pages+=("$pages")
+                all_pdfs+=("$pdf")
+                all_names+=("$filename")
+            fi
+        done < <(sort -t'|' -k1,1n "$temp_pdfs")
+        rm -f "$temp_pdfs"
+    fi
+    
+    total_pdfs=${#all_pdfs[@]}
+    if [[ "$total_pdfs" -eq 0 ]]; then
+        echo "❌ No hay libros PDF en el directorio pdfs."
+        exit 1
+    fi
+    
+    echo "📚 Libros disponibles:"
+    for (( i=0; i<total_pdfs; i++ )); do
+        echo "[$i] ${all_names[$i]} - ${all_pages[$i]} páginas"
+    done
+    echo ""
+    
+    selected_index=""
+    if [ -t 0 ]; then
+        while true; do
+            read -r -p "Seleccione el número del libro a procesar [0-$((total_pdfs - 1))]: " selection_val || true
+            if [[ -n "$selection_val" && "$selection_val" =~ ^[0-9]+$ && "$selection_val" -ge 0 && "$selection_val" -lt "$total_pdfs" ]]; then
+                selected_index="$selection_val"
+                break
+            else
+                echo "❌ Opción inválida. Intente de nuevo."
+            fi
+        done
+    else
+        selected_index=0
+        echo "[Auto] Seleccionado libro 0 debido a entrada no interactiva"
+    fi
+    
+    selected_pdf="${all_pdfs[$selected_index]}"
+    selected_filename="${all_names[$selected_index]}"
+    
+    echo ""
+    echo "Seleccione el idioma de destino para vociferar:"
+    echo "[0] vociferar en el idioma original"
+    echo "[1] vociferar hacia el español"
+    echo "[2] vociferar hacia el ingles"
+    echo "[3] vociferar hacia el alemán"
+    echo ""
+    
+    lang_choice="0"
+    if [ -t 0 ]; then
+        while true; do
+            read -r -p "Tipee [0/1/2/3] y enter: " input_lang || true
+            if [[ "$input_lang" =~ ^[0-3]$ ]]; then
+                lang_choice="$input_lang"
+                break
+            elif [[ -z "$input_lang" ]]; then
+                lang_choice="0"
+                break
+            else
+                echo "❌ Opción inválida. Intente de nuevo."
+            fi
+        done
+    else
+        lang_choice="0"
+        echo "[Auto] Seleccionado idioma original (0) debido a entrada no interactiva"
+    fi
+    
+    bash ./scripting/vociferate-pdf.single-lang--page-by-page.sh "$selected_pdf" "$lang_choice"
+    
+    echo ""
+    echo "🎉 ¡Conversión ardua completada con éxito!"
+    echo ""
+fi
+
+if [[ "$mode_selection" == "4" ]]; then
+    echo ""
+    read -r -p "Desea iterar todos los pdfs? (si/no) [Por defecto: no]: " iterar_confirm || true
+    iterar_confirm=$(echo "$iterar_confirm" | tr -d '[:space:]' | tr '[:upper:]' '[:lower:]')
+    
+    if [[ "$iterar_confirm" != "si" && "$iterar_confirm" != "s" ]]; then
+        echo "❌ Operación cancelada por el usuario."
+        exit 0
+    fi
+    
+    echo ""
+    echo "cuantas paginas por pdf?"
+    echo "[0] Todas"
+    echo "[5-15] del 5 al 15"
+    echo "[10] del 1 hasta el 10"
+    echo ""
+    read -r -p "Seleccione opción [Por defecto: 0]: " pages_input || true
+    pages_input=$(echo "$pages_input" | tr -d '[:space:]')
+    if [[ -z "$pages_input" ]]; then
+        pages_input="0"
+    fi
+    
+    echo ""
+    echo "Seleccione el idioma de destino para vociferar:"
+    echo "[0] vociferar en el idioma original"
+    echo "[1] vociferar hacia el español"
+    echo "[2] vociferar hacia el ingles"
+    echo "[3] vociferar hacia el alemán"
+    echo ""
+    
+    lang_choice="0"
+    if [ -t 0 ]; then
+        while true; do
+            read -r -p "Tipee [0/1/2/3] y enter: " input_lang || true
+            if [[ "$input_lang" =~ ^[0-3]$ ]]; then
+                lang_choice="$input_lang"
+                break
+            elif [[ -z "$input_lang" ]]; then
+                lang_choice="0"
+                break
+            else
+                echo "❌ Opción inválida. Intente de nuevo."
+            fi
+        done
+    else
+        lang_choice="0"
+        echo "[Auto] Seleccionado idioma original (0) debido a entrada no interactiva"
+    fi
+    
+    # Encontrar todos los PDFs
+    declare -a all_pdfs=()
+    declare -a all_filenames=()
+    declare -a all_pages=()
+    temp_all=$(mktemp)
+    while IFS= read -r -d '' pdf; do
+        filename=$(basename "$pdf")
+        if [[ "$pdf" =~ /\.git/ || "$pdf" =~ /personal/tmp_ ]]; then
+            continue
+        fi
+        pages=$(get_page_count "$pdf")
+        pages=${pages:-0}
+        printf '%d|%s|%s\n' "$pages" "$pdf" "$filename" >> "$temp_all"
+    done < <(find -L "$ABS_DIR" -maxdepth 1 -type f \( -iname "*.pdf" -o -iname "*.PDF" \) -print0)
+    
+    if [[ -f "$temp_all" ]]; then
+        while IFS='|' read -r pages pdf filename; do
+            if [[ -n "$pdf" ]]; then
+                all_pages+=("$pages")
+                all_pdfs+=("$pdf")
+                all_filenames+=("$filename")
+            fi
+        done < <(sort -t'|' -k1,1n "$temp_all")
+        rm -f "$temp_all"
+    fi
+    
+    total_pdfs=${#all_pdfs[@]}
+    if [[ "$total_pdfs" -eq 0 ]]; then
+        echo "❌ No se encontraron archivos PDF."
+        exit 1
+    fi
+    
+    export OVERRIDE_RANGE="$pages_input"
+    export OVERRIDE_LANG_OPT="$lang_choice"
+    
+    for (( i=0; i<total_pdfs; i++ )); do
+        pdf_path="${all_pdfs[$i]}"
+        pdf_name="${all_filenames[$i]}"
+        pdf_page_count="${all_pages[$i]}"
+        echo ""
+        echo "----------------------------------------------------"
+        echo "[Batch $((i+1)) / $total_pdfs] Procesando: $pdf_name ($pdf_page_count páginas)"
+        echo "----------------------------------------------------"
+        bash ./scripting/vociferate-pdf.single-lang--page-by-page.sh "$pdf_path" "$lang_choice"
+    done
+    
+    unset OVERRIDE_RANGE
+    unset OVERRIDE_LANG_OPT
+    
+    echo ""
+    echo "===================================================="
+    echo "🎉 ¡Conversión en lote completada con éxito!"
     echo "===================================================="
     echo ""
 fi

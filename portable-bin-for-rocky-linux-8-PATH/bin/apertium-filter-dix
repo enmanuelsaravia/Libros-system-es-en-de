@@ -10,4 +10,4 @@ case $# in
     exit 1;
 esac
 
-xsltproc --stringparam lang "$LANG" --stringparam side "$SIDE" /home/user/Personal/Libros-aurelia/portable-bin-for-rocky-linux-8-PATH/share/apertium/filter-dix.xslt "$3"
+xsltproc --stringparam lang "$LANG" --stringparam side "$SIDE" /home/user/Libros-system-es-en-de/portable-bin-for-rocky-linux-8-PATH/share/apertium/filter-dix.xslt "$3"

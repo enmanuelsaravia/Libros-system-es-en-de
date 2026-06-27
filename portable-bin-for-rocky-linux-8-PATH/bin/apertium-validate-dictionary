@@ -12,5 +12,5 @@ if [[ ! -e $FILE1 ]]; then
 fi
 
 # xsd is a non-final command, so just treated as a warning when compiling:
-xmllint --schema "/home/user/Personal/Libros-aurelia/portable-bin-for-rocky-linux-8-PATH"/share/lttoolbox/dix.xsd --noout "$FILE1" 2>&1 | grep -ve ' validates$' -e ' fails to validate$'
-xmllint --dtdvalid "/home/user/Personal/Libros-aurelia/portable-bin-for-rocky-linux-8-PATH"/share/lttoolbox/dix.dtd --noout "$FILE1"
+xmllint --schema "/home/user/Libros-system-es-en-de/portable-bin-for-rocky-linux-8-PATH"/share/lttoolbox/dix.xsd --noout "$FILE1" 2>&1 | grep -ve ' validates$' -e ' fails to validate$'
+xmllint --dtdvalid "/home/user/Libros-system-es-en-de/portable-bin-for-rocky-linux-8-PATH"/share/lttoolbox/dix.dtd --noout "$FILE1"

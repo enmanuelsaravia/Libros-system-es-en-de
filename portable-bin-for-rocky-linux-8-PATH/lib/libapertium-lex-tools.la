@@ -17,7 +17,7 @@ old_library='libapertium-lex-tools.a'
 inherited_linker_flags=''
 
 # Libraries that this one depends upon.
-dependency_libs=' -L/home/user/Personal/Libros-aurelia/portable-bin-for-rocky-linux-8-PATH/lib64 -llttoolbox -lxml2 -licuio -licui18n -licuuc -licudata'
+dependency_libs=' -L/home/user/Libros-system-es-en-de/portable-bin-for-rocky-linux-8-PATH/lib64 -llttoolbox -lxml2 -licuio -licui18n -licuuc -licudata'
 
 # Names of additional weak libraries provided by this library
 weak_library_names=''
@@ -38,4 +38,4 @@ dlopen=''
 dlpreopen=''
 
 # Directory that this library needs to be installed in:
-libdir='/home/user/Personal/Libros-aurelia/portable-bin-for-rocky-linux-8-PATH/lib'
+libdir='/home/user/Libros-system-es-en-de/portable-bin-for-rocky-linux-8-PATH/lib'

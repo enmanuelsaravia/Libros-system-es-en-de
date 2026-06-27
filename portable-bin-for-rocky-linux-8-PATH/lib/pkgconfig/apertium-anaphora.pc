@@ -1,4 +1,4 @@
-prefix=/home/user/Personal/Libros-aurelia/portable-bin-for-rocky-linux-8-PATH
+prefix=/home/user/Libros-system-es-en-de/portable-bin-for-rocky-linux-8-PATH
 
 Name: apertium-anaphora
 Description: Anaphora resolution module for Apertium

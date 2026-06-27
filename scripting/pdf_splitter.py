@@ -203,7 +203,7 @@ def partition_pdf(pdf_path, book_name, total_pages, audio_sizes, max_html_size=N
     return parts
 
 def split_pdf_file(pdf_path, start, end, part_num, total_parts):
-    # Output path under `/home/user/Personal/Libros-aurelia/personal/pdfs_recortados/`
+    # Output path under `/home/user/Libros-system-es-en-de/personal/pdfs_recortados/`
     out_dir = f"{PROJECT_ROOT}/personal/pdfs_recortados"
     os.makedirs(out_dir, exist_ok=True)
     

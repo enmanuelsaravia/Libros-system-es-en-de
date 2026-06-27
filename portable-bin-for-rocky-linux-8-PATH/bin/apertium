@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-APERTIUM_PATH="${APERTIUM_PATH:-/home/user/Personal/Libros-aurelia/portable-bin-for-rocky-linux-8-PATH/bin}"
-APERTIUM_DATADIR="${APERTIUM_DATADIR:-/home/user/Personal/Libros-aurelia/portable-bin-for-rocky-linux-8-PATH/share/apertium}"
+APERTIUM_PATH="${APERTIUM_PATH:-/home/user/Libros-system-es-en-de/portable-bin-for-rocky-linux-8-PATH/bin}"
+APERTIUM_DATADIR="${APERTIUM_DATADIR:-/home/user/Libros-system-es-en-de/portable-bin-for-rocky-linux-8-PATH/share/apertium}"
 apertium_version="Apertium 3.9.12"
 #!/bin/bash
 # -*- sh-basic-offset: 2 -*-

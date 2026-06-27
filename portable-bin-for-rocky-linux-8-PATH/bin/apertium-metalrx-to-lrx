@@ -9,6 +9,6 @@ case $# in
     exit 1;
 esac
 
-xsltproc /home/user/Personal/Libros-aurelia/portable-bin-for-rocky-linux-8-PATH/share/apertium/metalrx-to-lrx.xslt "$INFILE" > "$OUTFILE.tmp"
+xsltproc /home/user/Libros-system-es-en-de/portable-bin-for-rocky-linux-8-PATH/share/apertium/metalrx-to-lrx.xslt "$INFILE" > "$OUTFILE.tmp"
 xmllint --format "$OUTFILE.tmp" > "$OUTFILE"
 rm -f "$OUTFILE.tmp"
